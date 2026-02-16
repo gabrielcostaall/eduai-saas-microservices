@@ -1,0 +1,42 @@
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: eduai-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: eduai
+      MYSQL_USER: eduai_user
+      MYSQL_PASSWORD: eduai_pass
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ai-service:
+    build: ./ai-service
+    container_name: eduai-ai-service
+    volumes:
+      - ./ai-service:/app
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    env_file:
+      - ./ai-service/.env
+    ports:
+      - "8000:8000"
+
+  gateway-api:
+    build: ./gateway-api
+    container_name: eduai-gateway
+    volumes:
+      - ./gateway-api:/app
+    depends_on:
+      - ai-service
+    ports:
+      - "3000:3000"
