@@ -8,7 +8,7 @@ DATABASE_URL = (
     f"{os.getenv('DB_PASSWORD')}@"
     f"{os.getenv('DB_HOST')}:"
     f"{os.getenv('DB_PORT')}/"
-    f"{os.getenv('DB_NAME')}"
+    f"{os.getenv('DB_NAME')}?charset=utf8mb4"
 )
 
 

@@ -3,7 +3,7 @@ const axios = require("axios");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 // URL interna do microserviço FastAPI dentro do Docker
@@ -15,12 +15,12 @@ app.get("/", (req, res) => {
 });
 
 // Endpoint central: pergunta para IA
-app.post("/ask", async (req, res) => {
+app.post("/chat", async (req, res) => {
   try {
-    const { question } = req.body;
+    const { message } = req.body;
 
-    const response = await axios.post(`${AI_SERVICE_URL}/ask`, {
-      question,
+    const response = await axios.post(`${AI_SERVICE_URL}/chat`, {
+      message,
     });
 
     res.json(response.data);
@@ -33,13 +33,13 @@ app.post("/ask", async (req, res) => {
 });
 
 // Endpoint central: histórico
-app.get("/history", async (req, res) => {
+app.get("/messages", async (req, res) => {
   try {
-    const response = await axios.get(`${AI_SERVICE_URL}/history`);
+    const response = await axios.get(`${AI_SERVICE_URL}/messages`);
     res.json(response.data);
   } catch (error) {
     res.status(500).json({
-      error: "Erro ao buscar histórico",
+      error: "Erro ao buscar conversa",
       details: error.message,
     });
   }

@@ -6,11 +6,11 @@ from openai import OpenAI
 from app.config import OPENAI_API_KEY
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from app.models import Interaction
+from app.models import Message
 from app.deps import get_db
 
 from azure.ai.inference import ChatCompletionsClient
-from azure.ai.inference.models import SystemMessage, UserMessage
+from azure.ai.inference.models import SystemMessage, UserMessage, AssistantMessage
 from azure.core.credentials import AzureKeyCredential
 
 endpoint = "https://models.github.ai/inference"
@@ -26,31 +26,42 @@ client = ChatCompletionsClient(
 )
 
 
-class QuestionRequest(BaseModel):
-    question: str
+class ChatRequest(BaseModel):
+    message: str
 
 
-@router.post("/ask")
-async def ask_ai(data: QuestionRequest, db: Session = Depends(get_db)):
+@router.post("/chat")
+async def chat(request: ChatRequest, db: Session = Depends(get_db)):
+    user_message = Message(role="user", content=request.message)
+    db.add(user_message)
+    db.commit()
+
+     
+    history = db.query(Message).order_by(Message.created_at.asc()).all()
+
+    
+    messages_for_model = [
+        SystemMessage("Você é um tutor educacional que explica de forma simples.")
+    ]
+
+    for msg in history:
+        if msg.role == "user":
+            messages_for_model.append(UserMessage(msg.content))
+        else:
+            messages_for_model.append(AssistantMessage(msg.content))
+            
     response = client.complete(
-    messages=[
-        SystemMessage("Você é um tutor educacional que explica de forma simples."),
-        UserMessage(data.question),
-    ],
+    messages=messages_for_model,
     model=model
     )
     answer = response.choices[0].message.content
-    
-    interaction = Interaction(question=data.question, answer=answer)
-    db.add(interaction)
-    db.commit()
-    db.refresh(interaction)
 
-    return {
-        "id": interaction.id,
-        "question": data.question,
-        "answer": answer
-    }
+    
+    assistant_message = Message(role="assistant", content=answer)
+    db.add(assistant_message)
+    db.commit()
+
+    return {"response": answer}
 
     
 
@@ -66,18 +77,10 @@ async def ask_ai(data: QuestionRequest, db: Session = Depends(get_db)):
     #     "question": data.question,
     #     "answer": response.choices[0].message.content
     # }
-@router.get("/history")
-def get_history(db: Session = Depends(get_db)):
-    interactions = db.query(Interaction).order_by(Interaction.created_at.desc()).all()
 
-    return [
-        {
-            "id": i.id,
-            "question": i.question,
-            "answer": i.answer,
-            "created_at": i.created_at
-        }
-        for i in interactions
-    ]
+@router.get("/messages")
+def get_messages(db: Session = Depends(get_db)):
+    messages = db.query(Message).order_by(Message.created_at.asc()).all()
+    return messages
 
     

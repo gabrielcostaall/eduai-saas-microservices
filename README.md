@@ -14,11 +14,19 @@ This project simulates the modernization of a legacy monolithic system into dist
 - **Containerization** -> Docker
 - **Frontend (coming next)** -> Next.js
 
-Architecture flow:
+## Architecture flow
 
-Client -> Gateway -> AI Microservice -> MySQL
+Client
+   │
+   ▼
+Gateway API (Node.js)
+   │
+   ▼
+AI Microservice (FastAPI)
+   │
+   ▼
+MySQL Database
 
----
 
 ## Services
 
