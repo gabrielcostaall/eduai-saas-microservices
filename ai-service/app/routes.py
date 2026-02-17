@@ -2,7 +2,6 @@ import os
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from openai import OpenAI
 from app.config import OPENAI_API_KEY
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -19,7 +18,6 @@ token = os.environ["GITHUB_TOKEN"]
 
 router = APIRouter()
 
-#client = OpenAI(api_key=OPENAI_API_KEY)
 client = ChatCompletionsClient(
     endpoint=endpoint,
     credential=AzureKeyCredential(token),
@@ -64,19 +62,6 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     return {"response": answer}
 
     
-
-    # response = client.chat.completions.create(
-    #     model="gpt-4o-mini",
-    #     messages=[
-    #         {"role": "system", "content": "Você é um tutor educacional que explica de forma simples."},
-    #         {"role": "user", "content": data.question},
-    #     ]
-    # )
-
-    # return {
-    #     "question": data.question,
-    #     "answer": response.choices[0].message.content
-    # }
 
 @router.get("/messages")
 def get_messages(db: Session = Depends(get_db)):
