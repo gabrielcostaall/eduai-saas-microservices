@@ -12,7 +12,7 @@ This project simulates the modernization of a legacy monolithic system into dist
 - **AI Microservice** -> Python (FastAPI)
 - **Database** -> MySQL
 - **Containerization** -> Docker
-- **Frontend (coming next)** -> Next.js
+- **Frontend** -> Next.js
 
 ## Architecture flow
 
