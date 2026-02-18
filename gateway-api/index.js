@@ -1,13 +1,13 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+require('dotenv').config
+const { AI_SERVICE_URL } = process.env
 
 const app = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// URL interna do microserviço FastAPI dentro do Docker
-const AI_SERVICE_URL = "http://ai-service:8000";
 
 // Health check
 app.get("/", (req, res) => {
