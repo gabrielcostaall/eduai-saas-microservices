@@ -3,6 +3,8 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 import os
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 DATABASE_URL = (
     f"mysql+pymysql://{os.getenv('DB_USER')}:"
     f"{os.getenv('DB_PASSWORD')}@"
