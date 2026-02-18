@@ -2,6 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 
+
+const historyUrl = process.env.NEXT_PUBLIC_HISTORY_URL!;
+const chatUrl = process.env.NEXT_PUBLIC_CHAT_URL!;
+
+
+
+
+
 export default function Home() {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
@@ -9,7 +17,7 @@ export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const fetchMessages = async () => {
-    const res = await fetch("http://localhost:3000/messages");
+    const res = await fetch(historyUrl);
     const data = await res.json();
     setMessages(data);
   };
@@ -27,7 +35,7 @@ export default function Home() {
 
     setLoading(true);
 
-    await fetch("http://localhost:3000/chat", {
+    await fetch(chatUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
