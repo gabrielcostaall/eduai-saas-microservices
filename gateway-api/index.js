@@ -1,50 +1,38 @@
+require("dotenv").config();
+
 const express = require("express");
-const axios = require("axios");
 const cors = require("cors");
-require('dotenv').config
-const { AI_SERVICE_URL } = process.env
+
+const chatRoutes = require("./src/routes/chat.routes");
+const authRoutes = require("./src/routes/auth.routes");
+const { sequelize } = require("./src/database/models");
 
 const app = express();
-app.use(cors({ origin: "*" }));
+
+
+app.use(cors());
 app.use(express.json());
 
 
-// Health check
 app.get("/", (req, res) => {
   res.json({ status: "Gateway API running" });
 });
 
-// Endpoint central: pergunta para IA
-app.post("/chat", async (req, res) => {
-  try {
-    const { message } = req.body;
 
-    const response = await axios.post(`${AI_SERVICE_URL}/chat`, {
-      message,
+app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
+
+
+const PORT = process.env.PORT || 3000;
+
+sequelize.authenticate()
+  .then(() => {
+    console.log("Banco conectado com sucesso");
+
+    app.listen(PORT, () => {
+      console.log(`Gateway rodando na porta ${PORT}`);
     });
-
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({
-      error: "Erro ao conectar no microserviço de IA",
-      details: error.message,
-    });
-  }
-});
-
-// Endpoint central: histórico
-app.get("/messages", async (req, res) => {
-  try {
-    const response = await axios.get(`${AI_SERVICE_URL}/messages`);
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({
-      error: "Erro ao buscar conversa",
-      details: error.message,
-    });
-  }
-});
-
-app.listen(3000, () => {
-  console.log("Gateway rodando na porta 3000");
-});
+  })
+  .catch((err) => {
+    console.error("Erro ao conectar no banco:", err);
+  });

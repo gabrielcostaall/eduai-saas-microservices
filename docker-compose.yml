@@ -23,9 +23,7 @@ services:
     container_name: eduai-ai-service
     volumes:
       - ./ai-service:/app
-    depends_on:
-      mysql:
-        condition: service_healthy
+  
 
     env_file:
       - ./ai-service/.env
@@ -34,10 +32,16 @@ services:
 
   gateway-api:
     build: ./gateway-api
+    command: sh -c "sleep 5 && npm run migrate && npm start"
     container_name: eduai-gateway
     volumes:
       - ./gateway-api:/app
     depends_on:
-      - ai-service
+      ai-service:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    env_file:
+      - ./gateway-api/.env
     ports:
       - "3000:3000"
