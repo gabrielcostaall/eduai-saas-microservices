@@ -39,13 +39,14 @@ Responsible for:
 
 ### 2 - AI Service (FastAPI)
 - Handles AI requests
-- Persists question history
 - Integrates with OpenAI API
 
 ### 3 - Database (MySQL)
 Stores:
+- Users
 - Questions
 - Answers
+- Chats
 - Timestamps
 
 ---
@@ -59,7 +60,7 @@ docker-compose up --build
 # Services available at:
 
 - Gateway -> http://localhost:3000
-
+- Gateway Docs -> http://localhost:3000/api-docs
 - AI Docs -> http://localhost:8000/docs
 
 # Project Goals
