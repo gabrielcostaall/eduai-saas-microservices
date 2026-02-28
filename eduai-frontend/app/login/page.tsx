@@ -1,0 +1,81 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+
+const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL!;
+
+export default function LoginPage() {
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async () => {
+    const res = await fetch(loginUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+    const decoded: any = jwtDecode(data.token);
+    const user = decoded.id;
+
+    console.log(decoded)
+    login(data.token, user);
+    router.push("/");
+  };
+
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="bg-white p-8 rounded-xl shadow w-96 space-y-4">
+        <h2 className="text-xl font-bold text-gray-800">Login</h2>
+
+        <input
+          className="w-full border p-2 rounded placeholder-gray-400 text-gray-600"
+          placeholder="Usuário"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <div className="relative">
+            <input
+            type={showPassword ? "text" : "password"}
+            className="w-full border p-2 rounded pr-12 placeholder-gray-400 text-gray-600"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-600"
+            >
+                {showPassword ? "Ocultar" : "Mostrar"}
+            </button>
+        </div>
+
+        <button
+          onClick={handleLogin}
+          className="w-full bg-blue-600 text-white p-2 rounded"
+        >
+          Entrar
+        </button>
+        <p className="text-sm text-center text-gray-600 mt-4">
+            Não tem conta?{" "}
+                <span
+                    className="text-blue-600 cursor-pointer hover:underline"
+                    onClick={() => router.push("/register")}
+                >
+                    Registre-se aqui
+                </span>
+        </p>
+      </div>
+    </div>
+  );
+}
