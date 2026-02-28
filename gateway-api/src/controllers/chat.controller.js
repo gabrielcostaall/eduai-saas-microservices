@@ -115,6 +115,8 @@ async function getConversations(req, res) {
         separate: true
       }]
     });
+
+    
   
     const formattedConversations = conversations.map(conv => ({
       id: conv.id,
@@ -130,4 +132,32 @@ async function getConversations(req, res) {
   }
 }
 
-module.exports = { chat, getMessages, getConversations };
+async function deleteConversation(req, res) {
+  try {
+    const userId = req.user.id;
+    const { conversationId } = req.params;
+
+    const conversation = await Conversation.findOne({
+      where: { id: conversationId, user_id: userId }
+    });
+
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+
+    await Message.destroy({
+      where: { conversation_id: conversationId }
+    });
+
+    await Conversation.destroy({
+      where: { id: conversationId, user_id: userId }
+    });
+
+    return res.json({ message: "Conversation deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting conversation:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+module.exports = { chat, getMessages, getConversations, deleteConversation };
