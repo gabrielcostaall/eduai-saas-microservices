@@ -98,4 +98,36 @@ async function getMessages(req, res) {
   return res.json(messages);
 }
 
-module.exports = { chat, getMessages };
+async function getConversations(req, res) {
+  try {
+    const userId = req.user.id;
+  
+    const conversations = await Conversation.findAll({
+      where: { user_id: userId },
+      order: [["created_at", "DESC"]],
+      attributes: ["id", "created_at"],
+      include: [{
+        model: Message,
+        as: "Messages",
+        limit: 1,
+        order: [["created_at", "DESC"]],
+        attributes: ["content", "role", "created_at"],
+        separate: true
+      }]
+    });
+  
+    const formattedConversations = conversations.map(conv => ({
+      id: conv.id,
+      created_at: conv.created_at,
+      last_message: conv.Messages[0] || null
+    }));
+  
+  
+    return res.json(formattedConversations);
+  } catch (error) {
+    console.error("Error fetching conversations:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+module.exports = { chat, getMessages, getConversations };
