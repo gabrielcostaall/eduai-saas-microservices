@@ -7,12 +7,17 @@ const JWT_SECRET = process.env.JWT_SECRET;
 async function register(req, res) {
   try {
     const { username, password } = req.body;
-
     const existingUser = await User.findOne({ where: { username } });
+
     if (existingUser) {
       return res.status(400).json({ error: "Username already exists" });
     }
-
+    if (!password || password.length < 10 || password.length > 30) {
+      return res.status(400).json({ error: "Password must be at least 10 characters long and no more than 30 characters long" });
+    }
+    if (!username || username.length < 7 || username.length > 20) {
+      return res.status(400).json({ error: "Username must be between 7 and 20 characters long" });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -20,10 +25,14 @@ async function register(req, res) {
       password: hashedPassword
     });
 
-    return res.status(201).json({
-      message: "User created successfully",
-      userId: user.id
-    });
+
+    const token = jwt.sign(
+      { id: user.id },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    return res.json({ token });
 
   } catch (err) {
     return res.status(500).json({ error: "Internal server error: " + err.message });
