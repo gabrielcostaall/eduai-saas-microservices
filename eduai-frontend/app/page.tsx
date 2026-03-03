@@ -33,7 +33,7 @@ export default function LandingPage() {
   };
 
   return (
-    <main className="relative min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center overflow-hidden">
+    <main className="relative min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-between overflow-hidden py-12 px-6">
 
       {/* Background grid */}
       <div
@@ -44,12 +44,15 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Glow blob */}
+      {/* Glow blobs */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-blue-600 opacity-[0.07] blur-[120px] pointer-events-none" />
       <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] rounded-full bg-indigo-500 opacity-[0.05] blur-[80px] pointer-events-none" />
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6 gap-8">
+      {/* Spacer top */}
+      <div />
+
+      {/* Main content */}
+      <div className="relative z-10 flex flex-col items-center text-center gap-8">
 
         {/* Badge */}
         <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
@@ -88,37 +91,41 @@ export default function LandingPage() {
         <div className="flex flex-col sm:flex-row gap-3 mt-2">
           <button
             onClick={() => router.push("/login")}
-            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 hover:-translate-y-0.5 hover: cursor-pointer"
+            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 hover:-translate-y-0.5 cursor-pointer"
           >
             Login
           </button>
           <button
             onClick={() => router.push("/register")}
-            className="px-8 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover: cursor-pointer"
+            className="px-8 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
           >
             Registre-se
           </button>
         </div>
       </div>
-      {/* Recruiter footer */}
-      <div className="absolute bottom-[19%] z-10 flex items-center gap-2">
-        <span className="text-white/25 text-base" style={{ fontFamily: "'Georgia', serif" }}>
-          É um(a) recrutador(a)?
-        </span>
-        <button
-          onClick={handleRecruiterLogin}
-          className="text-sm text-blue-400/70 hover:text-blue-400 underline underline-offset-4 decoration-blue-400/30 hover:decoration-blue-400 transition-all duration-200 hover:cursor-pointer"
-        >
-          Clique aqui
-        </button>
+
+      {/* Footer — no fluxo normal, sempre embaixo */}
+      <div className="relative z-10 flex flex-col items-center gap-3">
+
+        {/* Recruiter */}
+        <div className="flex items-center gap-2">
+          <span className="text-white/25 text-base" style={{ fontFamily: "'Georgia', serif" }}>
+            É um(a) recrutador(a)?
+          </span>
+          <button
+            onClick={handleRecruiterLogin}
+            className="text-sm text-blue-400/70 hover:text-blue-400 underline underline-offset-4 decoration-blue-400/30 hover:decoration-blue-400 transition-all duration-200 cursor-pointer"
+          >
+            Clique aqui
+          </button>
+        </div>
+
+        {/* About */}
+        <p className="text-white/25 text-sm text-center max-w-screen-xl leading-relaxed" style={{ fontFamily: "'Georgia', serif" }}>
+          O EduAI é uma demonstração de um sistema de microserviços com inteligência artificial, e foi desenvolvido para mostrar as possibilidades de integração entre IA e arquitetura de software moderna. Seu objetivo é explicar conceitos da forma mais simplificada possível.
+        </p>
       </div>
 
-      {/* About */}
-      <div className="absolute bottom-0 z-10 flex items-center gap-2 max-w-screen-xl px-6">
-        <span className="text-white/25 text-sm text-center" style={{ fontFamily: "'Georgia', serif" }}>
-          O EduAI é uma demonstração de um sistema de microserviços com inteligência artificial, e foi desenvolvido para mostrar as possibilidades de integração entre IA e arquitetura de software moderna. Seu objetivo é explicar conceitos da forma mais simplificada possível.
-        </span>
-      </div>
     </main>
   );
 }
