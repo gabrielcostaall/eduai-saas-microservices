@@ -2,20 +2,17 @@ import os
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List
+from openai import OpenAI;
 
-from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import SystemMessage, UserMessage, AssistantMessage
-from azure.core.credentials import AzureKeyCredential
 
 router = APIRouter()
 
-endpoint = "https://models.github.ai/inference"
-model = "openai/gpt-4.1-mini"
-token = os.environ["GITHUB_TOKEN"]
 
-client = ChatCompletionsClient(
-    endpoint=endpoint,
-    credential=AzureKeyCredential(token),
+model = "openai/gpt-oss-20b"
+client = OpenAI(
+    api_key=os.environ["GROQ_API_KEY"],
+    base_url="https://api.groq.com/openai/v1",
 )
 
 
@@ -43,7 +40,7 @@ async def generate(request: ChatRequest):
         elif msg.role == "assistant":
             formatted_messages.append(AssistantMessage(msg.content))
 
-    response = client.complete(
+    response = client.chat.completions.create(
         messages=formatted_messages,
         model=model
     )

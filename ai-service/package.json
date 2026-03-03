@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "groq": "^5.13.0",
+    "openai": "^6.25.0"
+  }
+}

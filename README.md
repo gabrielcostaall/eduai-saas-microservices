@@ -1,77 +1,88 @@
-# EduAI SaaS – Microservices Architecture
+# EduAI – Microservices Architecture with AI Integration
 
-EduAI is a SaaS-style educational AI platform built using a modern microservices architecture.
-
-This project simulates the modernization of a legacy monolithic system into distributed services, focusing on scalability, modularization, and AI integration.
+EduAI is an educational AI assistant built with a modern microservices architecture. The project simulates the modernization of a legacy monolithic system into distributed services, focusing on scalability, modularization, and AI integration.
 
 ---
 
-## Architecture
+## Tech Stack
 
-- **Gateway API** -> Node.js (Express)
-- **AI Microservice** -> Python (FastAPI)
-- **Database** -> MySQL
-- **Containerization** -> Docker
-- **Frontend** -> Next.js
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js |
+| Gateway API | Node.js + Express |
+| AI Microservice | Python + FastAPI |
+| Database | MySQL |
+| Containerization | Docker |
 
-## Architecture flow
+---
 
-Client
-   │
-   ▼
-Gateway API (Node.js)
-   │
-   ▼
-AI Microservice (FastAPI)
-   │
-   ▼
-MySQL Database
+## Architecture Overview
 
+```
+Client (Next.js)
+      │
+      ▼
+Gateway API (Node.js / Express)
+      │
+      ├── Auth & User Management
+      ├── Conversation History (MySQL)
+      └── AI Requests
+            │
+            ▼
+      AI Microservice (FastAPI)
+            │
+            ▼
+      OpenAI API
+```
+
+---
 
 ## Services
 
-### 1 - Gateway API (Node.js)
-Central entry point for all client requests.
-Responsible for:
-- Routing
-- Microservice communication
-- Error handling
+### Gateway API (Node.js)
+Central entry point for all client requests. Handles routing, authentication (JWT), user management, conversation history, and communication with the AI microservice.
 
-### 2 - AI Service (FastAPI)
-- Handles AI requests
-- Integrates with OpenAI API
+### AI Microservice (FastAPI)
+Receives messages from the Gateway and processes them through the OpenAI API, returning responses to the client.
 
-### 3 - Database (MySQL)
-Stores:
-- Users
-- Questions
-- Answers
-- Chats
-- Timestamps
+### Frontend (Next.js)
+Chat interface where users can create accounts, start conversations with the AI, and review their conversation history.
 
 ---
 
 ## Running Locally
 
+Make sure you have **Docker** and **Docker Compose** installed.
+
+1. Clone the repository and navigate to the project root
+2. Copy the environment file and fill in the variables:
+```bash
+cp .env.example .env
+```
+3. Start all services:
 ```bash
 docker-compose up --build
 ```
 
-# Services available at:
+### Services available at:
 
-- Gateway -> http://localhost:3000
-- Gateway Docs -> http://localhost:3000/api-docs
-- AI Docs -> http://localhost:8000/docs
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3002 |
+| Gateway API | http://localhost:3000 |
+| Gateway Docs (Swagger) | http://localhost:3000/api-docs |
+| AI Service Docs | http://localhost:8000/docs |
 
-# Project Goals
+> **Recruiter access:** A demo account is available at the login screen. Click *"É um(a) recrutador(a)? Clique aqui"* to log in automatically. Conversation history is cleared on every login.
 
-- Demonstrate microservices transition
+---
 
-- Implement AI integration in a modular architecture
+## Project Goals
 
-- Simulate SaaS environment
-
-- Apply Docker-based infrastructure
+- Demonstrate a microservices-based architecture in practice
+- Integrate AI into a modular, scalable system
+- Simulate a SaaS environment with JWT authentication
+- Apply Docker-based infrastructure for local development
 
 ## Author
 

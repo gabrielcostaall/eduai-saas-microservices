@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { User } = require("../database/models");
+const { User, Conversation, Message } = require("../database/models");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -52,7 +52,19 @@ async function login(req, res) {
     if (!isValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+    // If the user is a recruiter, we delete all their conversations and messages to start fresh on each login
+    if (username === "Recruiter") {
+    const conversations = await Conversation.findAll({
+      where: { user_id: user.id }
+    });
 
+    const conversationIds = conversations.map(c => c.id);
+
+    if (conversationIds.length > 0) {
+      await Message.destroy({ where: { conversation_id: conversationIds } });
+      await Conversation.destroy({ where: { user_id: user.id } });
+    }
+   }
     const token = jwt.sign(
       { id: user.id },
       JWT_SECRET,

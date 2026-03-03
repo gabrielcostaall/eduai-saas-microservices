@@ -51,9 +51,20 @@ export default function LoginPage() {
 };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="bg-white p-8 rounded-xl shadow w-96 space-y-4">
-        <h2 className="text-xl font-bold text-gray-800">Login</h2>
+    <div className="flex items-center justify-center h-screen" style={{ background: "linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%)" }}>
+      <div className="bg-white/60 p-8 rounded-xl shadow w-96 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-800">Login</h2>
+          <button
+            onClick={() => router.push("/")}
+            className="text-sm text-gray-600 hover:text-gray-800 hover:cursor-pointer transition-colors flex items-center gap-1"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Início
+          </button>
+        </div>
 
         <input
           className="w-full border p-2 rounded placeholder-gray-400 text-gray-600"
@@ -87,7 +98,7 @@ export default function LoginPage() {
 
         <button
           onClick={handleLogin}
-          className="w-full bg-blue-600 text-white p-2 rounded"
+          className="w-full bg-blue-600 text-white p-2 rounded hover:cursor-pointer hover:bg-blue-700 transition-colors"
         >
           Entrar
         </button>

@@ -1,12 +1,12 @@
 module.exports = {
   "/api/chat/conversations": {
     get: {
-      summary: "Lista todas as conversas do usuário autenticado",
-      tags: ["Histórico"],
+      summary: "List all conversations of the authenticated user",
+      tags: ["History"],
       security: [{ bearerAuth: [] }],
       responses: {
         200: {
-          description: "Lista de conversas",
+          description: "List of conversations",
           content: {
             "application/json": {
               schema: {
@@ -23,7 +23,7 @@ module.exports = {
                         properties: {
                           id: { type: "integer", example: 10 },
                           role: { type: "string", enum: ["user", "assistant"] },
-                          content: { type: "string", example: "Como eu aprendo a programar?" },
+                          content: { type: "string", example: "How do I learn to code?" },
                           created_at: { type: "string", format: "date-time" },
                         },
                       },
@@ -34,15 +34,15 @@ module.exports = {
             },
           },
         },
-        401: { description: "Não autorizado" },
+        401: { description: "Unauthorized" },
       },
     },
   },
 
   "/api/chat/conversations/{id}/messages": {
     get: {
-      summary: "Retorna todas as mensagens de uma conversa",
-      tags: ["Histórico"],
+      summary: "Return all messages from a conversation",
+      tags: ["History"],
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -50,12 +50,12 @@ module.exports = {
           in: "path",
           required: true,
           schema: { type: "integer" },
-          description: "ID da conversa",
+          description: "Conversation ID",
         },
       ],
       responses: {
         200: {
-          description: "Lista de mensagens da conversa",
+          description: "List of messages from the conversation",
           content: {
             "application/json": {
               schema: {
@@ -65,7 +65,7 @@ module.exports = {
                   properties: {
                     id: { type: "integer", example: 10 },
                     role: { type: "string", enum: ["user", "assistant"] },
-                    content: { type: "string", example: "Como eu aprendo a programar?" },
+                    content: { type: "string", example: "How do I learn to code?" },
                     created_at: { type: "string", format: "date-time" },
                   },
                 },
@@ -73,16 +73,16 @@ module.exports = {
             },
           },
         },
-        401: { description: "Não autorizado" },
-        404: { description: "Conversa não encontrada" },
+        401: { description: "Unauthorized" },
+        404: { description: "Conversation not found" },
       },
     },
   },
 
   "/api/chat/conversations/{id}": {
     delete: {
-      summary: "Deleta uma conversa",
-      tags: ["Histórico"],
+      summary: "Delete a conversation",
+      tags: ["History"],
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -90,13 +90,13 @@ module.exports = {
           in: "path",
           required: true,
           schema: { type: "integer" },
-          description: "ID da conversa a ser deletada",
+          description: "ID of the conversation to delete",
         },
       ],
       responses: {
-        200: { description: "Conversa deletada com sucesso" },
-        401: { description: "Não autorizado" },
-        404: { description: "Conversa não encontrada" },
+        200: { description: "Conversation deleted successfully" },
+        401: { description: "Unauthorized" },
+        404: { description: "Conversation not found" },
       },
     },
   },

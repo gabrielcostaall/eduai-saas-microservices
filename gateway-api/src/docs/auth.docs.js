@@ -1,7 +1,7 @@
 module.exports = {
   "/auth/register": {
     post: {
-      summary: "Registro de novo usuário",
+      summary: "Register a new user",
       tags: ["Auth"],
       requestBody: {
         required: true,
@@ -11,23 +11,23 @@ module.exports = {
               type: "object",
               required: ["username", "password"],
               properties: {
-                username: { type: "string", example: "joao_silva" },
-                password: { type: "string", example: "senha123" },
+                username: { type: "string", example: "john_doe" },
+                password: { type: "string", example: "password123" },
               },
             },
           },
         },
       },
       responses: {
-        201: { description: "Usuário criado com sucesso" },
-        400: { description: "Dados inválidos ou username já existe" },
+        201: { description: "User created successfully" },
+        400: { description: "Invalid data or username already exists" },
       },
     },
   },
 
   "/auth/login": {
     post: {
-      summary: "Login com username e senha",
+      summary: "Login with username and password",
       tags: ["Auth"],
       requestBody: {
         required: true,
@@ -37,8 +37,8 @@ module.exports = {
               type: "object",
               required: ["username", "password"],
               properties: {
-                username: { type: "string", example: "joao_silva" },
-                password: { type: "string", example: "senha123" },
+                username: { type: "string", example: "john_doe" },
+                password: { type: "string", example: "password123" },
               },
             },
           },
@@ -46,7 +46,7 @@ module.exports = {
       },
       responses: {
         200: {
-          description: "Login realizado com sucesso",
+          description: "Login successful",
           content: {
             "application/json": {
               schema: {
@@ -58,7 +58,7 @@ module.exports = {
             },
           },
         },
-        401: { description: "Credenciais inválidas" },
+        401: { description: "Invalid credentials" },
       },
     },
   },

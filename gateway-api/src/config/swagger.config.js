@@ -6,8 +6,8 @@ const options = {
     openapi: "3.0.0",
     info: {
       title: "EduAI API Gateway",
-      version: "1.0.0",
-      description: "Documentação dos endpoints da API",
+      version: "1.1.0",
+      description: "API endpoint documentation",
     },
     components: {
       securitySchemes: {

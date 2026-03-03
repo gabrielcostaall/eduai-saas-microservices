@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL!;
+const recruiterUsername = process.env.NEXT_PUBLIC_RECRUITER_USERNAME!;
+const recruiterPassword = process.env.NEXT_PUBLIC_RECRUITER_PASSWORD!;
 
 export default function LandingPage() {
   const router = useRouter();
@@ -15,7 +17,7 @@ export default function LandingPage() {
       const res = await fetch(loginUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "Recruiter", password: "recruiter123" }),
+        body: JSON.stringify({ username: recruiterUsername, password: recruiterPassword }),
       });
       if (!res.ok) throw new Error("Erro ao logar como recrutador");
 
@@ -52,7 +54,7 @@ export default function LandingPage() {
         {/* Badge */}
         <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-          <span className="text-xs text-white/50 tracking-widest uppercase font-medium">Assistente de Aprendizado Infantil</span>
+          <span className="text-xs text-white/50 tracking-widest uppercase font-medium">Assistente de Aprendizado</span>
         </div>
 
         {/* Heading */}
@@ -79,37 +81,43 @@ export default function LandingPage() {
 
         {/* Subtitle */}
         <p className="text-white/40 text-lg max-w-md leading-relaxed" style={{ fontFamily: "'Georgia', serif" }}>
-          O assistente inteligente para sua criança aprender, criar e evoluir.
+          O seu assistente inteligente para aprender, criar e evoluir.
         </p>
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 mt-2">
           <button
             onClick={() => router.push("/login")}
-            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 hover:-translate-y-0.5"
+            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 hover:-translate-y-0.5 hover: cursor-pointer"
           >
             Login
           </button>
           <button
             onClick={() => router.push("/register")}
-            className="px-8 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
+            className="px-8 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover: cursor-pointer"
           >
             Registre-se
           </button>
         </div>
       </div>
-
       {/* Recruiter footer */}
-      <div className="absolute bottom-8 z-10 flex items-center gap-2">
+      <div className="absolute bottom-[19%] z-10 flex items-center gap-2">
         <span className="text-white/25 text-base" style={{ fontFamily: "'Georgia', serif" }}>
           É um(a) recrutador(a)?
         </span>
         <button
           onClick={handleRecruiterLogin}
-          className="text-sm text-blue-400/70 hover:text-blue-400 underline underline-offset-4 decoration-blue-400/30 hover:decoration-blue-400 transition-all duration-200"
+          className="text-sm text-blue-400/70 hover:text-blue-400 underline underline-offset-4 decoration-blue-400/30 hover:decoration-blue-400 transition-all duration-200 hover:cursor-pointer"
         >
           Clique aqui
         </button>
+      </div>
+
+      {/* About */}
+      <div className="absolute bottom-0 z-10 flex items-center gap-2 max-w-screen-xl px-6">
+        <span className="text-white/25 text-sm text-center" style={{ fontFamily: "'Georgia', serif" }}>
+          O EduAI é uma demonstração de um sistema de microserviços com inteligência artificial, e foi desenvolvido para mostrar as possibilidades de integração entre IA e arquitetura de software moderna. Seu objetivo é explicar conceitos da forma mais simplificada possível.
+        </span>
       </div>
     </main>
   );
