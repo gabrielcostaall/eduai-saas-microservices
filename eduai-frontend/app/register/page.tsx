@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const registerUrl = process.env.NEXT_PUBLIC_REGISTER_URL!;
 
@@ -33,8 +34,10 @@ export default function RegisterPage() {
     }
 
     if (data.token) {
-      login(data.token, data.user);
-      router.push("/");
+      const decoded: any = jwtDecode(data.token);
+          const user = decoded.id;
+      login(data.token, user);
+      router.push("/chat");
     } else {
       router.push("/login");
     }
@@ -66,6 +69,12 @@ export default function RegisterPage() {
           placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleRegister();
+            }
+          }}
         />
 
         <button

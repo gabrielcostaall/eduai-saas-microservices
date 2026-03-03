@@ -1,136 +1,116 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
-import Sidebar from "@/components/sidebar/Sidebar";
-import MessageList from "@/components/chat/MessageList";
-import MessageInput from "@/components/chat/MessageInput";
-import EmptyChat from "@/components/chat/EmptyChat";
+const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL!;
 
-import { fetchConversations, fetchMessages, deleteConversation } from "@/services/history.service";
-import { sendMessage } from "@/services/chat.service";
-
-import { Message, Conversation } from "@/types";
-
-export default function Home() {
-  const { user, logout, token } = useAuth();
+export default function LandingPage() {
   const router = useRouter();
+  const { login } = useAuth();
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [conversationId, setConversationId] = useState<number | null>(null);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-
-  useEffect(() => {
-    if (!user) router.push("/login");
-  }, [user]);
-
-  useEffect(() => {
-    if (token) {
-      fetchConversations(token).then(setConversations).catch(console.error);
-    }
-  }, [token]);
-
-  useEffect(() => {
-    if (conversationId && conversationId !== 0) {
-      fetchMessages(token!, conversationId).then(setMessages).catch(console.error);
-    } else {
-      setMessages([]);
-    }
-  }, [conversationId]);
-
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    setLoading(true);
-
+  const handleRecruiterLogin = async () => {
     try {
-      const data = await sendMessage({ token: token!, message: input, conversationId });
+      const res = await fetch(loginUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: "Recruiter", password: "recruiter123" }),
+      });
+      if (!res.ok) throw new Error("Erro ao logar como recrutador");
 
-      if (!conversationId || conversationId === 0) {
-        setConversationId(data.conversationId);
-        fetchConversations(token!).then(setConversations).catch(console.error);
-      }
+      const data = await res.json();
+      const decoded: any = jwtDecode(data.token);
+      const user = decoded.id;
 
-      setInput("");
-
-      if (data.conversationId) {
-        fetchMessages(token!, data.conversationId).then(setMessages).catch(console.error);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteConversation(token!, id);
-      setConversations((prev) => prev.filter((c) => c.id !== id));
-      if (conversationId === id) {
-        setConversationId(null);
-        setMessages([]);
-      }
+      login(data.token, user);
+      router.push("/recruiter-chat");
     } catch (err) {
       console.error(err);
     }
   };
-
-  const isInChat = conversationId !== null && conversationId !== 0;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 font-sans">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
-            </svg>
-          </div>
-          <h1 className="text-lg font-bold text-gray-900">EduAI Assistant</h1>
+    <main className="relative min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center overflow-hidden">
+
+      {/* Background grid */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      {/* Glow blob */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-blue-600 opacity-[0.07] blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] rounded-full bg-indigo-500 opacity-[0.05] blur-[80px] pointer-events-none" />
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center text-center px-6 gap-8">
+
+        {/* Badge */}
+        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+          <span className="text-xs text-white/50 tracking-widest uppercase font-medium">Assistente de Aprendizado Infantil</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-xs text-gray-400 hidden sm:block">Microservices + AI</span>
-          <button
-            onClick={() => { logout(); router.push("/login"); }}
-            className="text-sm text-gray-500 hover:text-red-500 transition-colors flex items-center gap-1"
+
+        {/* Heading */}
+        <div className="flex flex-col gap-3">
+          <h1
+            className="text-6xl sm:text-7xl font-bold tracking-tight text-white leading-none"
+            style={{ fontFamily: "'Georgia', serif", letterSpacing: "-0.03em" }}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Sair
+            Bem-vindo ao
+          </h1>
+          <h1
+            className="text-6xl sm:text-7xl font-bold tracking-tight leading-none"
+            style={{
+              fontFamily: "'Georgia', serif",
+              letterSpacing: "-0.03em",
+              background: "linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            EduAI
+          </h1>
+        </div>
+
+        {/* Subtitle */}
+        <p className="text-white/40 text-lg max-w-md leading-relaxed" style={{ fontFamily: "'Georgia', serif" }}>
+          O assistente inteligente para sua criança aprender, criar e evoluir.
+        </p>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 mt-2">
+          <button
+            onClick={() => router.push("/login")}
+            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 hover:-translate-y-0.5"
+          >
+            Login
+          </button>
+          <button
+            onClick={() => router.push("/register")}
+            className="px-8 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
+          >
+            Registre-se
           </button>
         </div>
-      </header>
-
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar
-          conversations={conversations}
-          activeId={conversationId}
-          onSelect={setConversationId}
-          onNewConversation={() => setConversationId(0)}
-          onDelete={handleDelete}
-        />
-
-        <main className="flex-1 flex flex-col overflow-hidden">
-          {isInChat ? (
-            <MessageList messages={messages} />
-          ) : (
-            <EmptyChat onNewConversation={() => setConversationId(0)} />
-          )}
-
-          <MessageInput
-            value={input}
-            loading={loading}
-            onChange={setInput}
-            onSend={handleSend}
-          />
-        </main>
       </div>
-    </div>
+
+      {/* Recruiter footer */}
+      <div className="absolute bottom-8 z-10 flex items-center gap-2">
+        <span className="text-white/25 text-base" style={{ fontFamily: "'Georgia', serif" }}>
+          É um(a) recrutador(a)?
+        </span>
+        <button
+          onClick={handleRecruiterLogin}
+          className="text-sm text-blue-400/70 hover:text-blue-400 underline underline-offset-4 decoration-blue-400/30 hover:decoration-blue-400 transition-all duration-200"
+        >
+          Clique aqui
+        </button>
+      </div>
+    </main>
   );
 }

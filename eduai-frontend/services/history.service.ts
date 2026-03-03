@@ -7,7 +7,7 @@ export async function fetchConversations(token: string): Promise<Conversation[]>
   const res = await fetch(historyBaseUrl, {
     headers: { Authorization: `Bearer ${token}` },
   });
-
+  
   if (!res.ok) throw new Error("Erro ao buscar histórico");
 
   const data = await res.json();

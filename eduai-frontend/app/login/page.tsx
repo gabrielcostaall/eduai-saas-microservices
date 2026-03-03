@@ -14,22 +14,41 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
+  try {
+    setError("");
+
     const res = await fetch(loginUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
     });
 
+    if (!res.ok) {
+      setError("Credenciais inválidas");
+      return;
+    }
+
     const data = await res.json();
+
+    if (!data.token) {
+      setError("Credenciais inválidas");
+      return;
+    }
+
     const decoded: any = jwtDecode(data.token);
     const user = decoded.id;
 
-    console.log(decoded)
     login(data.token, user);
-    router.push("/");
-  };
+    router.push("/chat");
+
+  } catch (err) {
+    console.error(err);
+    setError("Erro ao conectar com o servidor");
+  }
+};
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -49,6 +68,12 @@ export default function LoginPage() {
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleLogin();
+            }
+          }}
             />
 
             <button
@@ -66,6 +91,11 @@ export default function LoginPage() {
         >
           Entrar
         </button>
+        {error && (
+          <p className="text-red-500 text-sm text-center">
+          {error}
+          </p>
+        )}
         <p className="text-sm text-center text-gray-600 mt-4">
             Não tem conta?{" "}
                 <span
