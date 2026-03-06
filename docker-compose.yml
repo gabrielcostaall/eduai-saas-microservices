@@ -30,9 +30,23 @@ services:
     ports:
       - "8000:8000"
 
+  auth-service:
+    build: ./auth-service
+    command: sh -c "sleep 5 && npm run seeds && npm start"
+    container_name: eduai-auth-service
+    volumes:
+      - ./auth-service:/app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - ./auth-service/.env
+    ports:
+      - "4000:4000"
+
   gateway-api:
     build: ./gateway-api
-    command: sh -c "sleep 5 && npm run migrate && npm run seeds && npm start"
+    command: sh -c "npm run migrate && sleep 5 &&npm start"
     container_name: eduai-gateway
     volumes:
       - ./gateway-api:/app
@@ -41,6 +55,8 @@ services:
         condition: service_started
       mysql:
         condition: service_healthy
+      auth-service:
+        condition: service_started
     env_file:
       - ./gateway-api/.env
     ports:
