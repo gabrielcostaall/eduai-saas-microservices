@@ -20,7 +20,18 @@ module.exports = {
       created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
+      },
+      totp_secret: {
+        type: Sequelize.STRING(64),
+        allowNull: true,
+        defaultValue: null,
+      },
+      totp_enabled: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       }
+
     });
   },
 
