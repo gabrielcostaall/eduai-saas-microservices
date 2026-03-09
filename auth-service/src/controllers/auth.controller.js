@@ -57,7 +57,7 @@ async function login(req, res) {
 
     if (user.locked_until && user.locked_until > new Date()) {
       const remaining = Math.ceil((user.locked_until - new Date()) / 1000);
-      return res.status(403).json({ error: `Account locked. Try again in ${remaining} seconds` });
+      return res.status(403).json({ error: `Account suspended. Try again in ${remaining} seconds` });
     }
 
     const isValid = await argon2.verify(user.password, password);
@@ -105,4 +105,20 @@ async function login(req, res) {
   }
 }
 
-module.exports = { register, login, getPublicKey };
+async function getMe(req, res) {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: ["id", "username", "totp_enabled"],
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.json(user);
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error: " + err.message });
+  }
+}
+
+module.exports = { register, login, getPublicKey, getMe };

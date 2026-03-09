@@ -87,4 +87,17 @@ router.post("/2fa/disable", async (req, res) => {
   }
 });
 
+router.get("/me", async (req, res) => {
+  try {
+    const response = await axios.get(`${AUTH_SERVICE_URL}/auth/me`, {
+      headers: { Authorization: req.headers.authorization },
+    });
+    return res.status(response.status).json(response.data);
+  } catch (err) {
+    const status = err.response?.status || 500;
+    const data = err.response?.data || { error: "Auth Service unavailable" };
+    return res.status(status).json(data);
+  }
+});
+
 module.exports = router;
