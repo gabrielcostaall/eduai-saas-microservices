@@ -5,7 +5,7 @@ async function getProfile(req, res) {
     const id = req.user.id;
     try {
         const user = await User.findByPk(id, {
-            attributes: ["username", "created_at"]
+            attributes: ["username", "created_at", "totp_enabled"]
         });
         if (!user) {
             return res.status(404).json({ error: "Usuário não encontrado" });

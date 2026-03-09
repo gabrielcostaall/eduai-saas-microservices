@@ -30,8 +30,17 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+      },
+      failed_attempts: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      locked_until: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: null,
       }
-
     });
   },
 

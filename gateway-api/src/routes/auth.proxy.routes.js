@@ -1,8 +1,17 @@
 const express = require("express");
 const axios = require("axios");
+const rateLimit = require("express-rate-limit");
 
 const router = express.Router();
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL;
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 7,
+  message: { error: "Muitas tentativas de login. Tente novamente mais tarde." },
+  standardHeaders: true, // Retorna os headers `RateLimit-*`
+  legacyHeaders: false, // Desativa os headers `X-RateLimit-*`
+});
 
 // Redireciona /auth/register para o Auth Service
 router.post("/register", async (req, res) => {
@@ -17,7 +26,7 @@ router.post("/register", async (req, res) => {
 });
 
 // Redireciona /auth/login para o Auth Service
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   try {
     const response = await axios.post(`${AUTH_SERVICE_URL}/auth/login`, req.body);
     return res.status(response.status).json(response.data);
