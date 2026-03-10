@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
 
 const loginUrl = process.env.NEXT_PUBLIC_LOGIN_URL!;
 const recruiterUsername = process.env.NEXT_PUBLIC_RECRUITER_USERNAME!;
@@ -11,6 +12,18 @@ const recruiterPassword = process.env.NEXT_PUBLIC_RECRUITER_PASSWORD!;
 export default function LandingPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { user, token } = useAuth();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      router.push("/chat");
+    } else if (!token) {
+      setChecking(false); // só mostra a landing se definitivamente não há token
+    }
+  }, [user, token]);
+
+  if (checking) return null; // ou um spinner
 
   const handleRecruiterLogin = async () => {
     try {
@@ -25,7 +38,7 @@ export default function LandingPage() {
       const decoded: any = jwtDecode(data.token);
       const user = decoded.id;
 
-      login(data.token, user);
+      await login(data.token, user, false);
       router.push("/recruiter-chat");
     } catch (err) {
       console.error(err);

@@ -15,40 +15,45 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = async () => {
-  try {
-    setError("");
+    try {
+      setError("");
 
-    const res = await fetch(loginUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+      const res = await fetch(loginUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (!res.ok) {
-      setError("Credenciais inválidas");
-      return;
+      if (!res.ok) {
+        setError("Credenciais inválidas");
+        return;
+      }
+
+      const data = await res.json();
+
+      // Usuário tem 2FA ativo — redireciona para verificação
+      if (data.requiresTwoFactor) {
+        router.push(`/verify-2fa?userId=${data.userId}`);
+        return;
+      }
+
+      if (!data.token) {
+        setError("Credenciais inválidas");
+        return;
+      }
+
+      const decoded: any = jwtDecode(data.token);
+      await login(data.token, decoded.id, rememberMe);
+      router.push("/chat");
+
+    } catch (err) {
+      console.error(err);
+      setError("Erro ao conectar com o servidor");
     }
-
-    const data = await res.json();
-
-    if (!data.token) {
-      setError("Credenciais inválidas");
-      return;
-    }
-
-    const decoded: any = jwtDecode(data.token);
-    const user = decoded.id;
-
-    login(data.token, user);
-    router.push("/chat");
-
-  } catch (err) {
-    console.error(err);
-    setError("Erro ao conectar com o servidor");
-  }
-};
+  };
 
   return (
     <div className="flex items-center justify-center h-screen" style={{ background: "linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%)" }}>
@@ -73,48 +78,50 @@ export default function LoginPage() {
           onChange={(e) => setUsername(e.target.value)}
         />
         <div className="relative">
-            <input
+          <input
             type={showPassword ? "text" : "password"}
             className="w-full border p-2 rounded pr-12 placeholder-gray-400 text-gray-600"
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleLogin();
-            }
-          }}
-            />
-
-            <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-600"
-            >
-                {showPassword ? "Ocultar" : "Mostrar"}
-            </button>
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleLogin();
+              }
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-600"
+          >
+            {showPassword ? "Ocultar" : "Mostrar"}
+          </button>
         </div>
-
+        <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={rememberMe}
+          onChange={(e) => setRememberMe(e.target.checked)}
+        />
+        Mantenha-me conectado
+        </label>
         <button
           onClick={handleLogin}
           className="w-full bg-blue-600 text-white p-2 rounded hover:cursor-pointer hover:bg-blue-700 transition-colors"
         >
           Entrar
         </button>
-        {error && (
-          <p className="text-red-500 text-sm text-center">
-          {error}
-          </p>
-        )}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         <p className="text-sm text-center text-gray-600 mt-4">
-            Não tem conta?{" "}
-                <span
-                    className="text-blue-600 cursor-pointer hover:underline"
-                    onClick={() => router.push("/register")}
-                >
-                    Registre-se aqui
-                </span>
+          Não tem conta?{" "}
+          <span
+            className="text-blue-600 cursor-pointer hover:underline"
+            onClick={() => router.push("/register")}
+          >
+            Registre-se aqui
+          </span>
         </p>
       </div>
     </div>
