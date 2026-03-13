@@ -19,6 +19,11 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
+      const errorMesages: Record<number, string> = {
+        401: "Credenciais inválidas",
+        403: "Conta suspensa. Tente novamente mais tarde.",
+        429: "Muitas tentativas. Tente novamente mais tarde.",
+      };
       setError("");
 
       const res = await fetch(loginUrl, {
@@ -28,7 +33,9 @@ export default function LoginPage() {
       });
 
       if (!res.ok) {
-        setError("Credenciais inválidas");
+        const errorData = await res.json();
+        
+        setError(errorMesages[res.status] || errorData.error || "Erro inesperado. Tente novamente.");
         return;
       }
 
